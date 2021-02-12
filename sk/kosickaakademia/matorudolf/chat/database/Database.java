@@ -5,6 +5,7 @@ import sk.kosickaakademia.matorudolf.chat.entity.User;
 import sk.kosickaakademia.matorudolf.chat.util.Util;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Database {
@@ -98,8 +99,28 @@ public class Database {
         return null;
 
     }
-    public boolean changePassword(String login , String oldPassword, String newPassword){
-        return false;
+    public boolean changePassword (String login , String oldPassword, String newPassword){
+        if (login == null  || login.equals("")  || oldPassword == null || oldPassword.length() <6 || newPassword == null || newPassword.length() <6 )
+                    return false;
+        try{
+            Connection con = getConnection();
+            if (con ==null) {
+                System.out.println("Chyba pripojenia! ");
+                return false;
+
+            PreparedStatement ps = con.prepareStatement( changePassword );
+                ps.setString(1, newPassword );
+                ps.setString(2, login);
+                ps.setString(1, oldPassword);
+                int result = ps.executeUpdate();
+                con.close( );
+
+    }} catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
     public boolean sendMessage(int from, String toUser,String text){
         if(text == null || text.equals (""))
@@ -132,14 +153,74 @@ public class Database {
         return false;
      }
     public int getUserId(String login){
-        return -1;
+
+        int id = -1;
+        if (login == null || login.equals ("" ))
+           return id;
+
+        try {
+            Connection con = getConnection();
+                if (con == null) {
+                    System.out.println("Chyba spojenia! ");
+                    return id;
+
+                    PreparedStatement ps = con.prepareStatement(getUserId);
+                    ps.setInt(1,login);
+                    int result = ps.executeUpdate();
+                    con.close();
+        }
+    } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Message> getMyMessages(String login){
+        List<Message> ls= new ArrayList<>();
+        if (login == null || login.equals ("" ))
+            return ls;
+        try {
+            Connection con = getConnection();
+            if (con == null) {
+                System.out.println("Chyba spojenia! ");
+                return ls;
+
+                PreparedStatement ps = con.prepareStatement(getMyMessages);
+                ps.setInt(1,login);
+                int result = ps.executeUpdate();
+                con.close();
+        }
         return null;
+    } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void deleteAllMyMessages(String login){
-    }
+    public boolean deleteAllMyMessages(String login) {
+        if (login == null || login.equals(""))
+            return false; 
 
+        try {
+            Connection con = getConnection();
+            if (con == null) {
+                System.out.println("Chyba spojenia! ");
+                return false;
+
+                PreparedStatement ps = con.prepareStatement(deleteAllMyMessages);
+                ps.setInt(1,login);
+                int result = ps.executeUpdate();
+                con.close();
+
+
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }return true;
+    }
 }
