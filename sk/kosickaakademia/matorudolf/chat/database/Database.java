@@ -13,8 +13,14 @@ public class Database {
     private String username = "mysqluser";
     private String password = "Kosice2021!";
     private final String insertNewUser = "INSERT INTO user(login,password) VALUES(?,?)";
-    private final String loginUser = "Select * FROM user WHERE login LIKE ? AND password LIKE ? ";
+    private final String loginUser = "SELECT * FROM user WHERE login LIKE ? AND password LIKE ? ";
+    private final String changePassword = " UPDATE user SET password = ? WHERE login = ? AND password = ? ";
     private final String newMessage = "INSERT INTO message (frto, to, text) VALUES ( ?,?,?) ";
+    private final String getId = " SELECT id FROM user WHERE login LIKE ? ";
+    private final String delMessages = "DELETE FROM message WHERE toUser = ? ";
+    private final String getMessages = "SELECT * FROM message "
+            + " INNER JOIN user ON user.id=message.fromUser "
+            + " WHERE toUser = ? ";
 
     private Connection getConnection() throws  SQLException, ClassNotFoundException {
         Class.forName( "com.mysql.cj.jdbc.Driver" );
@@ -99,28 +105,30 @@ public class Database {
         return null;
 
     }
-    public boolean changePassword (String login , String oldPassword, String newPassword){
-        if (login == null  || login.equals("")  || oldPassword == null || oldPassword.length() <6 || newPassword == null || newPassword.length() <6 )
-                    return false;
-        try{
+    public boolean changePassword (String login , String oldPassword, String newPassword) {
+        if (login == null || login.equals("") || oldPassword == null || oldPassword.length() < 6 || newPassword == null || newPassword.length() < 6)
+            return false;
+        int result = 0;
+        try {
             Connection con = getConnection();
-            if (con ==null) {
+            if (con == null) {
                 System.out.println("Chyba pripojenia! ");
                 return false;
 
-            PreparedStatement ps = con.prepareStatement( changePassword );
-                ps.setString(1, newPassword );
+                PreparedStatement ps = con.prepareStatement(changePassword);
+                ps.setString(1, newPassword);
                 ps.setString(2, login);
                 ps.setString(1, oldPassword);
-                int result = ps.executeUpdate();
-                con.close( );
+                result = ps.executeUpdate();
+                con.close();
 
-    }} catch (SQLException throwables) {
+            }
+        } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return result;
+        return true;
     }
     public boolean sendMessage(int from, String toUser,String text){
         if(text == null || text.equals (""))
@@ -165,7 +173,7 @@ public class Database {
                     return id;
 
                     PreparedStatement ps = con.prepareStatement(getUserId);
-                    ps.setInt(1,login);
+                    ps.setInt(1, Integer.parseInt(login));
                     int result = ps.executeUpdate();
                     con.close();
         }
@@ -174,6 +182,7 @@ public class Database {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        return id;
     }
 
     public List<Message> getMyMessages(String login){
@@ -187,7 +196,7 @@ public class Database {
                 return ls;
 
                 PreparedStatement ps = con.prepareStatement(getMyMessages);
-                ps.setInt(1,login);
+                ps.setInt(1, Integer.parseInt(login));
                 int result = ps.executeUpdate();
                 con.close();
         }
@@ -197,20 +206,24 @@ public class Database {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        return ls;
     }
 
-    public boolean deleteAllMyMessages(String login) {
+    public void deleteAllMyMessages(String login) {
         if (login == null || login.equals(""))
-            return false; 
+            return;
 
         try {
+            int id = getUserId(login);
+            if ( id == -1)
+                return;
             Connection con = getConnection();
             if (con == null) {
                 System.out.println("Chyba spojenia! ");
-                return false;
+                return;
 
                 PreparedStatement ps = con.prepareStatement(deleteAllMyMessages);
-                ps.setInt(1,login);
+                ps.setInt(1,id);
                 int result = ps.executeUpdate();
                 con.close();
 
@@ -221,6 +234,6 @@ public class Database {
             throwables.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }return true;
+        }return;
     }
 }
