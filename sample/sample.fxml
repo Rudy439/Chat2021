@@ -1,8 +1,40 @@
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.GridPane?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<GridPane fx:controller="sample.Controller"
-          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
-</GridPane>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+    <children>
+        <Label layoutX="61.0" layoutY="57.0" text="Login : ">
+            <font>
+                <Font size="26.0" />
+            </font>
+        </Label>
+        <Label layoutX="61.0" layoutY="128.0" text="Password : ">
+            <font>
+                <Font size="26.0" />
+            </font>
+        </Label>
+        <TextField fx:id="txt_login" layoutX="189.0" layoutY="61.0">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </TextField>
+        <Button fx:id="btn_login" layoutX="284.0" layoutY="212.0" mnemonicParsing="false" onAction="#btn_click" prefHeight="54.0" prefWidth="128.0" text="Login">
+            <font>
+                <Font size="25.0" />
+            </font>
+        </Button>
+        <PasswordField fx:id="txt_password" layoutX="189.0" layoutY="131.0">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </PasswordField>
+        <Label fx:id="lbl_error" layoutX="237.0" layoutY="179.0" text="Incorrect credentials !" textFill="#dd0808" visible="false">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
+    </children>
+</Pane>
